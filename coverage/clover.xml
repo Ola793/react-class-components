@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1778542863494" clover="3.2.0">
-  <project timestamp="1778542863494" name="All files">
-    <metrics statements="69" coveredstatements="63" conditionals="22" coveredconditionals="19" methods="24" coveredmethods="22" elements="115" coveredelements="104" complexity="0" loc="69" ncloc="69" packages="4" files="9" classes="9"/>
+<coverage generated="1778543217336" clover="3.2.0">
+  <project timestamp="1778543217336" name="All files">
+    <metrics statements="69" coveredstatements="69" conditionals="22" coveredconditionals="21" methods="24" coveredmethods="24" elements="115" coveredelements="114" complexity="0" loc="69" ncloc="69" packages="4" files="9" classes="9"/>
     <package name="src">
       <metrics statements="26" coveredstatements="26" conditionals="10" coveredconditionals="9" methods="7" coveredmethods="7"/>
       <file name="App.tsx" path="C:\dev\react-class-components\src\App.tsx">
@@ -52,16 +52,16 @@
       </file>
     </package>
     <package name="src.components">
-      <metrics statements="32" coveredstatements="26" conditionals="8" coveredconditionals="6" methods="16" coveredmethods="14"/>
+      <metrics statements="32" coveredstatements="32" conditionals="8" coveredconditionals="8" methods="16" coveredmethods="16"/>
       <file name="AppErrorBoundary.tsx" path="C:\dev\react-class-components\src\components\AppErrorBoundary.tsx">
-        <metrics statements="7" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="4" coveredmethods="3"/>
-        <line num="16" count="6" type="stmt"/>
-        <line num="18" count="6" type="stmt"/>
-        <line num="24" count="0" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="34" count="21" type="cond" truecount="1" falsecount="1"/>
-        <line num="35" count="0" type="stmt"/>
-        <line num="45" count="21" type="stmt"/>
+        <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+        <line num="16" count="12" type="stmt"/>
+        <line num="18" count="12" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="30" count="2" type="stmt"/>
+        <line num="34" count="29" type="cond" truecount="2" falsecount="0"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="45" count="25" type="stmt"/>
       </file>
       <file name="Card.tsx" path="C:\dev\react-class-components\src\components\Card.tsx">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
@@ -77,14 +77,14 @@
         <line num="20" count="9" type="stmt"/>
       </file>
       <file name="ErrorButton.tsx" path="C:\dev\react-class-components\src\components\ErrorButton.tsx">
-        <metrics statements="7" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="3" coveredmethods="2"/>
-        <line num="9" count="6" type="stmt"/>
-        <line num="11" count="6" type="stmt"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="17" count="0" type="stmt"/>
-        <line num="21" count="21" type="cond" truecount="1" falsecount="1"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="25" count="21" type="stmt"/>
+        <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="9" count="9" type="stmt"/>
+        <line num="11" count="9" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="21" count="25" type="cond" truecount="2" falsecount="0"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="25" count="23" type="stmt"/>
       </file>
       <file name="Loader.tsx" path="C:\dev\react-class-components\src\components\Loader.tsx">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
