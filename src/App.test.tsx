@@ -1,0 +1,139 @@
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import App from './App';
+import { fetchCharacters } from './api/charactersApi';
+import type { Character } from './types/character';
+
+vi.mock('./api/charactersApi', () => ({
+  fetchCharacters: vi.fn(),
+}));
+
+const mockedFetchCharacters = vi.mocked(fetchCharacters);
+
+const rick: Character = {
+  id: 1,
+  name: 'Rick Sanchez',
+  status: 'Alive',
+  species: 'Human',
+  image: 'https://example.com/rick.png',
+};
+
+const morty: Character = {
+  id: 2,
+  name: 'Morty Smith',
+  status: 'Alive',
+  species: 'Human',
+  image: 'https://example.com/morty.png',
+};
+
+describe('App', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    mockedFetchCharacters.mockReset();
+  });
+
+  it('fetches all characters on initial load when localStorage is empty', async () => {
+    mockedFetchCharacters.mockResolvedValue([rick]);
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(mockedFetchCharacters).toHaveBeenCalledWith('');
+    });
+
+    expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
+  });
+
+  it('reads saved search term from localStorage and displays it in the input', async () => {
+    localStorage.setItem('searchTerm', 'Morty');
+    mockedFetchCharacters.mockResolvedValue([morty]);
+
+    render(<App />);
+
+    expect(screen.getByDisplayValue('Morty')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mockedFetchCharacters).toHaveBeenCalledWith('Morty');
+    });
+
+    expect(await screen.findByText(/morty smith/i)).toBeInTheDocument();
+  });
+
+  it('shows loading indicator while characters are being loaded', async () => {
+    let resolveRequest: (characters: Character[]) => void = () => {};
+
+    const pendingRequest = new Promise<Character[]>((resolve) => {
+      resolveRequest = resolve;
+    });
+
+    mockedFetchCharacters.mockReturnValue(pendingRequest);
+
+    render(<App />);
+
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+
+    resolveRequest([rick]);
+
+    expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows a readable error message when API request fails', async () => {
+    mockedFetchCharacters.mockRejectedValue(
+      new Error('Unable to load characters. Please try another search term.')
+    );
+
+    render(<App />);
+
+    expect(
+      await screen.findByText(
+        /unable to load characters\. please try another search term\./i
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('saves trimmed search term to localStorage and fetches matching results', async () => {
+    const user = userEvent.setup();
+
+    mockedFetchCharacters
+      .mockResolvedValueOnce([rick])
+      .mockResolvedValueOnce([morty]);
+
+    render(<App />);
+
+    expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText(/search characters by name/i);
+
+    await user.type(input, '  Morty  ');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    await waitFor(() => {
+      expect(mockedFetchCharacters).toHaveBeenCalledWith('Morty');
+    });
+
+    expect(localStorage.getItem('searchTerm')).toBe('Morty');
+    expect(await screen.findByText(/morty smith/i)).toBeInTheDocument();
+  });
+
+  it('does not make a new request when search term has not changed', async () => {
+    const user = userEvent.setup();
+
+    localStorage.setItem('searchTerm', 'Rick');
+    mockedFetchCharacters.mockResolvedValue([rick]);
+
+    render(<App />);
+
+    expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
+
+    mockedFetchCharacters.mockClear();
+
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    expect(mockedFetchCharacters).not.toHaveBeenCalled();
+  });
+});
