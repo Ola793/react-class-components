@@ -15,9 +15,13 @@ describe('Card', () => {
   it('renders character name, description and image', () => {
     render(<Card character={character} />);
 
-    expect(screen.getByRole('heading', { name: /rick sanchez/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /rick sanchez/i })
+    ).toBeInTheDocument();
+
     expect(screen.getByText(/alive/i)).toBeInTheDocument();
     expect(screen.getByText(/human/i)).toBeInTheDocument();
+
     expect(screen.getByRole('img', { name: /rick sanchez/i })).toHaveAttribute(
       'src',
       character.image
