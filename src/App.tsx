@@ -5,6 +5,7 @@ import { CardList } from './components/CardList';
 import { ErrorButton } from './components/ErrorButton';
 import { Loader } from './components/Loader';
 import { Search } from './components/Search';
+import { useLocalStorage } from './hooks/useLocalStorage';
 import type { Character } from './types/character';
 import './App.css';
 
@@ -12,9 +13,8 @@ const STORAGE_KEY = 'searchTerm';
 
 function App() {
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [searchTerm, setSearchTerm] = useState(
-    () => localStorage.getItem(STORAGE_KEY) ?? ''
-  );
+  const { storedValue: searchTerm, updateStoredValue: setSearchTerm } =
+    useLocalStorage(STORAGE_KEY);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -64,7 +64,6 @@ function App() {
       return;
     }
 
-    localStorage.setItem(STORAGE_KEY, trimmedValue);
     setIsLoading(true);
     setSearchTerm(trimmedValue);
   };
