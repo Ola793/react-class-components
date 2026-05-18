@@ -2,6 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fetchCharacters } from './charactersApi';
 
 const characterResponse = {
+  info: {
+    count: 1,
+    pages: 1,
+    next: null,
+    prev: null,
+  },
   results: [
     {
       id: 1,
@@ -29,7 +35,7 @@ describe('fetchCharacters', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       'https://rickandmortyapi.com/api/character?page=1'
     );
-    expect(characters).toEqual(characterResponse.results);
+    expect(characters).toEqual(characterResponse);
   });
 
   it('fetches the first page with search term when search term is provided', async () => {
@@ -43,7 +49,7 @@ describe('fetchCharacters', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       'https://rickandmortyapi.com/api/character?page=1&name=Rick'
     );
-    expect(characters).toEqual(characterResponse.results);
+    expect(characters).toEqual(characterResponse);
   });
 
   it('throws a readable error when response is not successful', async () => {

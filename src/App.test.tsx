@@ -11,6 +11,16 @@ vi.mock('./api/charactersApi', () => ({
 
 const mockedFetchCharacters = vi.mocked(fetchCharacters);
 
+const createCharactersResponse = (characters: Character[]) => ({
+  info: {
+    count: characters.length,
+    pages: 1,
+    next: null,
+    prev: null,
+  },
+  results: characters,
+});
+
 const rick: Character = {
   id: 1,
   name: 'Rick Sanchez',
@@ -34,7 +44,7 @@ describe('App', () => {
   });
 
   it('fetches all characters on initial load when localStorage is empty', async () => {
-    mockedFetchCharacters.mockResolvedValue([rick]);
+    mockedFetchCharacters.mockResolvedValue(createCharactersResponse([rick]));
 
     render(<App />);
 
@@ -47,7 +57,7 @@ describe('App', () => {
 
   it('reads saved search term from localStorage and displays it in the input', async () => {
     localStorage.setItem('searchTerm', 'Morty');
-    mockedFetchCharacters.mockResolvedValue([morty]);
+    mockedFetchCharacters.mockResolvedValue(createCharactersResponse([morty]));
 
     render(<App />);
 
@@ -61,19 +71,22 @@ describe('App', () => {
   });
 
   it('shows loading indicator while characters are being loaded', async () => {
-    let resolveRequest: (characters: Character[]) => void = () => {};
+  let resolveRequest: (response: ReturnType<typeof createCharactersResponse>) => void =
+    () => {};
 
-    const pendingRequest = new Promise<Character[]>((resolve) => {
+  const pendingRequest = new Promise<ReturnType<typeof createCharactersResponse>>(
+    (resolve) => {
       resolveRequest = resolve;
-    });
+    }
+  );
 
-    mockedFetchCharacters.mockReturnValue(pendingRequest);
+  mockedFetchCharacters.mockReturnValue(pendingRequest);
 
-    render(<App />);
+  render(<App />);
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  expect(screen.getByText(/loading/i)).toBeInTheDocument();
 
-    resolveRequest([rick]);
+  resolveRequest(createCharactersResponse([rick]));
 
     expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
 
@@ -100,8 +113,8 @@ describe('App', () => {
     const user = userEvent.setup();
 
     mockedFetchCharacters
-      .mockResolvedValueOnce([rick])
-      .mockResolvedValueOnce([morty]);
+      .mockResolvedValueOnce(createCharactersResponse([rick]))
+      .mockResolvedValueOnce(createCharactersResponse([morty]));
 
     render(<App />);
 
@@ -124,7 +137,7 @@ describe('App', () => {
     const user = userEvent.setup();
 
     localStorage.setItem('searchTerm', 'Rick');
-    mockedFetchCharacters.mockResolvedValue([rick]);
+    mockedFetchCharacters.mockResolvedValue(createCharactersResponse([rick]));
 
     render(<App />);
 
