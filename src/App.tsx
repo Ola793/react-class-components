@@ -9,6 +9,7 @@ import { Pagination } from './components/Pagination';
 import { Search } from './components/Search';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { Character } from './types/character';
+import { Link } from 'react-router-dom';
 import './App.css';
 
 const STORAGE_KEY = 'searchTerm';
@@ -122,6 +123,11 @@ function App() {
   return (
     <AppErrorBoundary>
       <main className="app">
+        <nav className="app-navigation">
+          <Link to="/?page=1">Home</Link>
+          <Link to="/about">About</Link>
+        </nav>
+        
         <section className="search-section">
           <h1>Character search</h1>
           <Search initialValue={searchTerm} onSearch={handleSearch} />
