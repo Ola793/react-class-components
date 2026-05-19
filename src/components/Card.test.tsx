@@ -39,4 +39,15 @@ describe('Card', () => {
 
     expect(onSelect).toHaveBeenCalledWith(character.id);
   });
+
+  it('calls onSelect when card is clicked', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+
+    render(<Card character={character} onSelect={onSelect} />);
+
+    await user.click(screen.getByRole('button', { name: /rick sanchez/i }));
+
+    expect(onSelect).toHaveBeenCalledWith(character.id);
+  });
 });
