@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, Outlet, useSearchParams } from 'react-router-dom';
 import { fetchCharacters } from './api/charactersApi';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
 import { CardList } from './components/CardList';
@@ -9,7 +9,8 @@ import { Pagination } from './components/Pagination';
 import { Search } from './components/Search';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { Character } from './types/character';
-import { Link } from 'react-router-dom';
+
+
 import './App.css';
 
 const STORAGE_KEY = 'searchTerm';
@@ -34,6 +35,7 @@ function App() {
     useLocalStorage(STORAGE_KEY);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const selectedCharacterId = searchParams.get('details');
 
   const currentPage = getValidPage(searchParams.get('page'));
 
@@ -99,6 +101,24 @@ function App() {
     setSearchParams({ page: String(page) });
   };
 
+  const handleCharacterSelect = (characterId: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    nextParams.set('page', String(currentPage));
+    nextParams.set('details', String(characterId));
+
+    setSearchParams(nextParams);
+  };
+
+  const handleDetailsClose = () => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    nextParams.delete('details');
+    nextParams.set('page', String(currentPage));
+
+    setSearchParams(nextParams);
+  };
+
   const renderResults = () => {
     if (isLoading) {
       return <Loader />;
@@ -110,7 +130,7 @@ function App() {
 
     return (
       <>
-        <CardList characters={characters} />
+        <CardList characters={characters} onSelect={handleCharacterSelect} />
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -127,7 +147,7 @@ function App() {
           <Link to="/?page=1">Home</Link>
           <Link to="/about">About</Link>
         </nav>
-        
+
         <section className="search-section">
           <h1>Character search</h1>
           <Search initialValue={searchTerm} onSearch={handleSearch} />
@@ -137,6 +157,13 @@ function App() {
           <h2>Results</h2>
           {renderResults()}
         </section>
+
+        <Outlet
+          context={{
+            characterId: selectedCharacterId,
+            onClose: handleDetailsClose,
+          }}
+        />
 
         <ErrorButton />
       </main>
