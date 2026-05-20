@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { fetchCharacters } from './api/charactersApi';
@@ -10,6 +11,24 @@ vi.mock('./api/charactersApi', () => ({
 }));
 
 const mockedFetchCharacters = vi.mocked(fetchCharacters);
+
+const createCharactersResponse = (characters: Character[]) => ({
+  info: {
+    count: characters.length,
+    pages: 1,
+    next: null,
+    prev: null,
+  },
+  results: characters,
+});
+
+const renderApp = () => {
+  return render(
+    <MemoryRouter initialEntries={['/?page=1']}>
+      <App />
+    </MemoryRouter>
+  );
+};
 
 const rick: Character = {
   id: 1,
@@ -34,12 +53,12 @@ describe('App', () => {
   });
 
   it('fetches all characters on initial load when localStorage is empty', async () => {
-    mockedFetchCharacters.mockResolvedValue([rick]);
+    mockedFetchCharacters.mockResolvedValue(createCharactersResponse([rick]));
 
-    render(<App />);
+    renderApp();
 
     await waitFor(() => {
-      expect(mockedFetchCharacters).toHaveBeenCalledWith('');
+      expect(mockedFetchCharacters).toHaveBeenCalledWith('', 1);
     });
 
     expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
@@ -47,33 +66,37 @@ describe('App', () => {
 
   it('reads saved search term from localStorage and displays it in the input', async () => {
     localStorage.setItem('searchTerm', 'Morty');
-    mockedFetchCharacters.mockResolvedValue([morty]);
+    mockedFetchCharacters.mockResolvedValue(createCharactersResponse([morty]));
 
-    render(<App />);
+    renderApp();
 
     expect(screen.getByDisplayValue('Morty')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(mockedFetchCharacters).toHaveBeenCalledWith('Morty');
+      expect(mockedFetchCharacters).toHaveBeenCalledWith('Morty', 1);
     });
 
     expect(await screen.findByText(/morty smith/i)).toBeInTheDocument();
   });
 
   it('shows loading indicator while characters are being loaded', async () => {
-    let resolveRequest: (characters: Character[]) => void = () => {};
+    let resolveRequest: (
+      response: ReturnType<typeof createCharactersResponse>
+    ) => void = () => {};
 
-    const pendingRequest = new Promise<Character[]>((resolve) => {
+    const pendingRequest = new Promise<
+      ReturnType<typeof createCharactersResponse>
+    >((resolve) => {
       resolveRequest = resolve;
     });
 
     mockedFetchCharacters.mockReturnValue(pendingRequest);
 
-    render(<App />);
+    renderApp();
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
 
-    resolveRequest([rick]);
+    resolveRequest(createCharactersResponse([rick]));
 
     expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
 
@@ -87,7 +110,7 @@ describe('App', () => {
       new Error('Unable to load characters. Please try another search term.')
     );
 
-    render(<App />);
+    renderApp();
 
     expect(
       await screen.findByText(
@@ -100,10 +123,10 @@ describe('App', () => {
     const user = userEvent.setup();
 
     mockedFetchCharacters
-      .mockResolvedValueOnce([rick])
-      .mockResolvedValueOnce([morty]);
+      .mockResolvedValueOnce(createCharactersResponse([rick]))
+      .mockResolvedValueOnce(createCharactersResponse([morty]));
 
-    render(<App />);
+    renderApp();
 
     expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
 
@@ -113,7 +136,7 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /search/i }));
 
     await waitFor(() => {
-      expect(mockedFetchCharacters).toHaveBeenCalledWith('Morty');
+      expect(mockedFetchCharacters).toHaveBeenCalledWith('Morty', 1);
     });
 
     expect(localStorage.getItem('searchTerm')).toBe('Morty');
@@ -124,9 +147,9 @@ describe('App', () => {
     const user = userEvent.setup();
 
     localStorage.setItem('searchTerm', 'Rick');
-    mockedFetchCharacters.mockResolvedValue([rick]);
+    mockedFetchCharacters.mockResolvedValue(createCharactersResponse([rick]));
 
-    render(<App />);
+    renderApp();
 
     expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
 

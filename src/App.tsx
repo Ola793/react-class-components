@@ -1,89 +1,125 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, Outlet, useSearchParams } from 'react-router-dom';
 import { fetchCharacters } from './api/charactersApi';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
 import { CardList } from './components/CardList';
 import { ErrorButton } from './components/ErrorButton';
 import { Loader } from './components/Loader';
+import { Pagination } from './components/Pagination';
 import { Search } from './components/Search';
+import { useLocalStorage } from './hooks/useLocalStorage';
 import type { Character } from './types/character';
+
+
 import './App.css';
 
 const STORAGE_KEY = 'searchTerm';
+const DEFAULT_PAGE = 1;
 
-interface AppState {
-  characters: Character[];
-  searchTerm: string;
-  isLoading: boolean;
-  errorMessage: string;
-}
+const getValidPage = (page: string | null) => {
+  const parsedPage = Number(page);
 
-class App extends Component<object, AppState> {
-  constructor(props: object) {
-    super(props);
-
-    const savedSearchTerm = localStorage.getItem(STORAGE_KEY) ?? '';
-
-    this.state = {
-      characters: [],
-      searchTerm: savedSearchTerm,
-      isLoading: false,
-      errorMessage: '',
-    };
+  if (!Number.isInteger(parsedPage) || parsedPage < DEFAULT_PAGE) {
+    return DEFAULT_PAGE;
   }
 
-  componentDidMount() {
-    this.loadCharacters(this.state.searchTerm);
-  }
+  return parsedPage;
+};
 
-  loadCharacters = async (searchTerm: string) => {
-    this.setState({
-      isLoading: true,
-      errorMessage: '',
-    });
+function App() {
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    try {
-      const characters = await fetchCharacters(searchTerm);
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [totalPages, setTotalPages] = useState(DEFAULT_PAGE);
+  const { storedValue: searchTerm, updateStoredValue: setSearchTerm } =
+    useLocalStorage(STORAGE_KEY);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const selectedCharacterId = searchParams.get('details');
 
-      this.setState({
-        characters,
-        isLoading: false,
-      });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.';
+  const currentPage = getValidPage(searchParams.get('page'));
 
-      this.setState({
-        characters: [],
-        errorMessage,
-        isLoading: false,
-      });
+  useEffect(() => {
+    if (!searchParams.has('page')) {
+      setSearchParams({ page: String(DEFAULT_PAGE) }, { replace: true });
     }
-  };
+  }, [searchParams, setSearchParams]);
 
-  handleSearch = (value: string) => {
+  useEffect(() => {
+    let isActualRequest = true;
+
+    const loadCharacters = async () => {
+      try {
+        const data = await fetchCharacters(searchTerm, currentPage);
+
+        if (!isActualRequest) {
+          return;
+        }
+
+        setCharacters(data.results);
+        setTotalPages(data.info.pages);
+        setErrorMessage('');
+      } catch (error) {
+        if (!isActualRequest) {
+          return;
+        }
+
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong. Please try again.';
+
+        setCharacters([]);
+        setTotalPages(DEFAULT_PAGE);
+        setErrorMessage(message);
+      } finally {
+        if (isActualRequest) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadCharacters();
+
+    return () => {
+      isActualRequest = false;
+    };
+  }, [searchTerm, currentPage]);
+
+  const handleSearch = (value: string) => {
     const trimmedValue = value.trim();
 
-    if (trimmedValue === this.state.searchTerm) {
+    if (trimmedValue === searchTerm) {
       return;
     }
 
-    localStorage.setItem(STORAGE_KEY, trimmedValue);
-
-    this.setState(
-      {
-        searchTerm: trimmedValue,
-      },
-      () => {
-        this.loadCharacters(trimmedValue);
-      }
-    );
+    setSearchTerm(trimmedValue);
+    setSearchParams({ page: String(DEFAULT_PAGE) });
   };
 
-  renderResults() {
-    const { characters, errorMessage, isLoading } = this.state;
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: String(page) });
+  };
 
+  const handleCharacterSelect = (characterId: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    nextParams.set('page', String(currentPage));
+    nextParams.set('details', String(characterId));
+
+    setSearchParams(nextParams);
+  };
+
+  const handleDetailsClose = () => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    nextParams.delete('details');
+    nextParams.set('page', String(currentPage));
+
+    setSearchParams(nextParams);
+  };
+
+  const renderResults = () => {
     if (isLoading) {
       return <Loader />;
     }
@@ -92,31 +128,47 @@ class App extends Component<object, AppState> {
       return <p className="error-message">{errorMessage}</p>;
     }
 
-    return <CardList characters={characters} />;
-  }
-
-  render() {
     return (
-      <AppErrorBoundary>
-        <main className="app">
-          <section className="search-section">
-            <h1>Character search</h1>
-            <Search
-              initialValue={this.state.searchTerm}
-              onSearch={this.handleSearch}
-            />
-          </section>
-
-          <section className="results-section">
-            <h2>Results</h2>
-            {this.renderResults()}
-          </section>
-
-          <ErrorButton />
-        </main>
-      </AppErrorBoundary>
+      <>
+        <CardList characters={characters} onSelect={handleCharacterSelect} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </>
     );
-  }
+  };
+
+  return (
+    <AppErrorBoundary>
+      <main className="app">
+        <nav className="app-navigation">
+          <Link to="/?page=1">Home</Link>
+          <Link to="/about">About</Link>
+        </nav>
+
+        <section className="search-section">
+          <h1>Character search</h1>
+          <Search initialValue={searchTerm} onSearch={handleSearch} />
+        </section>
+
+        <section className="results-section">
+          <h2>Results</h2>
+          {renderResults()}
+        </section>
+
+        <Outlet
+          context={{
+            characterId: selectedCharacterId,
+            onClose: handleDetailsClose,
+          }}
+        />
+
+        <ErrorButton />
+      </main>
+    </AppErrorBoundary>
+  );
 }
 
 export default App;

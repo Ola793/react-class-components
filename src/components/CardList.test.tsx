@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { CardList } from './CardList';
 import type { Character } from '../types/character';
 
@@ -22,14 +22,16 @@ const characters: Character[] = [
 
 describe('CardList', () => {
   it('renders all provided characters', () => {
-    render(<CardList characters={characters} />);
+    const onSelect = vi.fn();
+    render(<CardList characters={characters} onSelect={onSelect} />);
 
     expect(screen.getByText(/rick sanchez/i)).toBeInTheDocument();
     expect(screen.getByText(/morty smith/i)).toBeInTheDocument();
   });
 
   it('renders empty message when there are no characters', () => {
-    render(<CardList characters={[]} />);
+    const onSelect = vi.fn();
+    render(<CardList characters={[]} onSelect={onSelect} />);
 
     expect(screen.getByText(/no results found/i)).toBeInTheDocument();
   });

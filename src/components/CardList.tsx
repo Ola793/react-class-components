@@ -1,25 +1,25 @@
-import { Component } from 'react';
 import type { Character } from '../types/character';
 import { Card } from './Card';
 
 interface CardListProps {
   characters: Character[];
+  onSelect: (characterId: number) => void;
 }
 
-export class CardList extends Component<CardListProps> {
-  render() {
-    const { characters } = this.props;
-
-    if (characters.length === 0) {
-      return <p className="empty-message">No results found.</p>;
-    }
-
-    return (
-      <div className="card-list">
-        {characters.map((character) => (
-          <Card key={character.id} character={character} />
-        ))}
-      </div>
-    );
+export function CardList({ characters, onSelect }: CardListProps) {
+  if (characters.length === 0) {
+    return <p className="empty-message">No results found.</p>;
   }
+
+  return (
+    <div className="card-list">
+      {characters.map((character) => (
+        <Card
+          key={character.id}
+          character={character}
+          onSelect={onSelect}
+        />
+      ))}
+    </div>
+  );
 }

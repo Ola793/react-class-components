@@ -1,31 +1,19 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
-interface ErrorButtonState {
-  hasError: boolean;
-}
+export function ErrorButton() {
+  const [hasError, setHasError] = useState(false);
 
-export class ErrorButton extends Component<object, ErrorButtonState> {
-  constructor(props: object) {
-    super(props);
-
-    this.state = {
-      hasError: false,
-    };
+  if (hasError) {
+    throw new Error('Test application error');
   }
 
-  handleClick = () => {
-    this.setState({ hasError: true });
+  const handleClick = () => {
+    setHasError(true);
   };
 
-  render() {
-    if (this.state.hasError) {
-      throw new Error('Test application error');
-    }
-
-    return (
-      <button className="error-button" type="button" onClick={this.handleClick}>
-        Simulate error
-      </button>
-    );
-  }
+  return (
+    <button className="error-button" type="button" onClick={handleClick}>
+      Simulate error
+    </button>
+  );
 }

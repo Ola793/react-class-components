@@ -1,52 +1,38 @@
-import { Component, type ChangeEvent, type FormEvent } from 'react';
+import { type ChangeEvent, type FormEvent, useState } from 'react';
 
 interface SearchProps {
   initialValue: string;
   onSearch: (searchTerm: string) => void;
 }
 
-interface SearchState {
-  searchTerm: string;
-}
+export function Search({ initialValue, onSearch }: SearchProps) {
+  const [searchTerm, setSearchTerm] = useState(() => initialValue);
 
-export class Search extends Component<SearchProps, SearchState> {
-  constructor(props: SearchProps) {
-    super(props);
-
-    this.state = {
-      searchTerm: props.initialValue,
-    };
-  }
-
-  componentDidUpdate(prevProps: SearchProps) {
-    if (prevProps.initialValue !== this.props.initialValue) {
-      this.setState({ searchTerm: this.props.initialValue });
-    }
-  }
-
-  handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: event.target.value });
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
-  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    this.props.onSearch(this.state.searchTerm);
+
+    const trimmedSearchTerm = searchTerm.trim();
+
+    setSearchTerm(trimmedSearchTerm);
+    onSearch(trimmedSearchTerm);
   };
 
-  render() {
-    return (
-      <form className="search" onSubmit={this.handleSubmit}>
-        <input
-          className="search__input"
-          type="text"
-          value={this.state.searchTerm}
-          onChange={this.handleChange}
-          placeholder="Search characters by name"
-        />
-        <button className="search__button" type="submit">
-          Search
-        </button>
-      </form>
-    );
-  }
+  return (
+    <form className="search" onSubmit={handleSubmit}>
+      <input
+        className="search__input"
+        type="text"
+        value={searchTerm}
+        onChange={handleChange}
+        placeholder="Search characters by name"
+      />
+      <button className="search__button" type="submit">
+        Search
+      </button>
+    </form>
+  );
 }
