@@ -1,4 +1,5 @@
 import { useSelectedItemsStore } from '../store/selectedItemsStore';
+import { downloadSelectedItemsCsv } from '../utils/downloadCsv';
 
 export function SelectedItemsFlyout() {
   const selectedItems = useSelectedItemsStore((state) => state.selectedItems);
@@ -16,7 +17,10 @@ export function SelectedItemsFlyout() {
         Unselect all
       </button>
 
-      <button type="button">
+      <button
+        type="button"
+        onClick={() => downloadSelectedItemsCsv(selectedItems)}
+      >
         Download
       </button>
     </div>
