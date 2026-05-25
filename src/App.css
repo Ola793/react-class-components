@@ -78,6 +78,7 @@ input {
 .search__button,
 .pagination button,
 .details-panel__close,
+.selected-flyout button,
 .error-button {
   padding: 10px 16px;
   color: #111820;
@@ -90,7 +91,8 @@ input {
 
 .search__button:hover,
 .pagination button:hover:not(:disabled),
-.details-panel__close:hover {
+.details-panel__close:hover,
+.selected-flyout button:hover {
   opacity: 0.9;
 }
 
@@ -185,6 +187,29 @@ input {
   opacity: 0.5;
 }
 
+.selected-flyout {
+  position: sticky;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: fit-content;
+  margin: 32px auto 0;
+  padding: 16px 20px;
+  color: #f5f7fb;
+  background: #111820;
+  border: 1px solid #263241;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 30%);
+}
+
+.selected-flyout p {
+  margin: 0;
+  font-weight: 600;
+}
+
 .details-panel {
   position: sticky;
   top: 24px;
@@ -247,6 +272,7 @@ input {
 
 .app:has(.details-panel) .app-navigation,
 .app:has(.details-panel) .search-section,
+.app:has(.details-panel) .selected-flyout,
 .app:has(.details-panel) .error-button {
   grid-column: 1 / -1;
 }
@@ -273,32 +299,16 @@ input {
   .search {
     flex-direction: column;
   }
+}
 
+@media (max-width: 600px) {
   .selected-flyout {
-    position: sticky;
-    bottom: 16px;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin: 32px auto 0;
-    padding: 16px;
-    background: #f5f7fb;
-    color: #111820;
-    border-radius: 16px;
-    box-shadow: 0 12px 30px rgb(0 0 0 / 30%);
-  }
-
-  .selected-flyout p {
-    margin: 0;
-    font-weight: 600;
+    flex-direction: column;
+    align-items: stretch;
+    width: calc(100% - 32px);
   }
 
   .selected-flyout button {
-    padding: 8px 12px;
-    cursor: pointer;
-    border: 1px solid #3c4d63;
-    border-radius: 8px;
+    width: 100%;
   }
 }
