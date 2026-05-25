@@ -9,6 +9,7 @@ import { Pagination } from './components/Pagination';
 import { Search } from './components/Search';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { Character } from './types/character';
+import { SelectedItemsFlyout } from './components/SelectedItemsFlyout';
 
 
 import './App.css';
@@ -164,7 +165,7 @@ function App() {
             onClose: handleDetailsClose,
           }}
         />
-
+        <SelectedItemsFlyout />
         <ErrorButton />
       </main>
     </AppErrorBoundary>
