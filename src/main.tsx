@@ -5,17 +5,20 @@ import App from './App.tsx';
 import { CharacterDetails } from './components/CharacterDetails.tsx';
 import { AboutPage } from './pages/AboutPage.tsx';
 import { NotFoundPage } from './pages/NotFoundPage.tsx';
+import { ThemeProvider } from './context/ThemeProvider';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<CharacterDetails />} />
-        </Route>
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <ThemeProvider>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<CharacterDetails />} />
+          </Route>
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </ThemeProvider>
     </BrowserRouter>
   </StrictMode>
 );

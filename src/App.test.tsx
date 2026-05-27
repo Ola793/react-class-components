@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { fetchCharacters } from './api/charactersApi';
 import type { Character } from './types/character';
+import { ThemeProvider } from './context/ThemeProvider';
 
 vi.mock('./api/charactersApi', () => ({
   fetchCharacters: vi.fn(),
@@ -25,7 +26,9 @@ const createCharactersResponse = (characters: Character[]) => ({
 const renderApp = () => {
   return render(
     <MemoryRouter initialEntries={['/?page=1']}>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </MemoryRouter>
   );
 };

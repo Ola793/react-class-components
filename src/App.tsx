@@ -10,8 +10,7 @@ import { Search } from './components/Search';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { Character } from './types/character';
 import { SelectedItemsFlyout } from './components/SelectedItemsFlyout';
-
-
+import { ThemeSwitcher } from './components/ThemeSwitcher';
 import './App.css';
 
 const STORAGE_KEY = 'searchTerm';
@@ -147,6 +146,7 @@ function App() {
         <nav className="app-navigation">
           <Link to="/?page=1">Home</Link>
           <Link to="/about">About</Link>
+          <ThemeSwitcher />
         </nav>
 
         <section className="search-section">
