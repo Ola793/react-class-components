@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useOutletContext } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -23,15 +23,13 @@ const createTestQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        gcTime: 0,
+        gcTime: Infinity,
         staleTime: Infinity,
       },
     },
   });
 
-const renderCharacterDetails = () => {
-  const queryClient = createTestQueryClient();
-
+const renderCharacterDetails = (queryClient = createTestQueryClient()) => {
   return render(
     <QueryClientProvider client={queryClient}>
       <CharacterDetails />
@@ -118,5 +116,37 @@ describe("CharacterDetails", () => {
     await user.click(screen.getByRole("button", { name: /close/i }));
 
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("uses cached details data and refetches after refresh", async () => {
+    const user = userEvent.setup();
+    const queryClient = createTestQueryClient();
+
+    mockedUseOutletContext.mockReturnValue({
+      characterId: "1",
+      onClose: vi.fn(),
+    });
+
+    mockedFetchCharacterById.mockResolvedValue(rick);
+
+    const firstRender = renderCharacterDetails(queryClient);
+
+    expect(await screen.findByRole("heading", { name: /rick sanchez/i })).toBeInTheDocument();
+
+    expect(mockedFetchCharacterById).toHaveBeenCalledTimes(1);
+
+    firstRender.unmount();
+
+    renderCharacterDetails(queryClient);
+
+    expect(await screen.findByRole("heading", { name: /rick sanchez/i })).toBeInTheDocument();
+
+    expect(mockedFetchCharacterById).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole("button", { name: /refresh details/i }));
+
+    await waitFor(() => {
+      expect(mockedFetchCharacterById).toHaveBeenCalledTimes(2);
+    });
   });
 });
