@@ -1,11 +1,11 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
-import { ThemeProvider } from '../context/ThemeProvider';
-import { ThemeSwitcher } from './ThemeSwitcher';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
+import { ThemeProvider } from "../context/ThemeProvider";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
-describe('ThemeSwitcher', () => {
-  it('switches theme after click', async () => {
+describe("ThemeSwitcher", () => {
+  it("switches theme after click", async () => {
     const user = userEvent.setup();
 
     render(
@@ -14,7 +14,7 @@ describe('ThemeSwitcher', () => {
       </ThemeProvider>
     );
 
-    const button = screen.getByRole('button', {
+    const button = screen.getByRole("button", {
       name: /switch to light theme/i,
     });
 
@@ -22,8 +22,6 @@ describe('ThemeSwitcher', () => {
 
     await user.click(button);
 
-    expect(
-      screen.getByRole('button', { name: /switch to dark theme/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /switch to dark theme/i })).toBeInTheDocument();
   });
 });

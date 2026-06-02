@@ -1,10 +1,10 @@
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from "../hooks/useTheme";
 
 export function ThemeSwitcher() {
   const { theme, toggleTheme } = useTheme();
 
-  const nextTheme = theme === 'dark' ? 'light' : 'dark';
-  const icon = theme === 'dark' ? '☀️' : '🌙';
+  const nextTheme = theme === "dark" ? "light" : "dark";
+  const icon = theme === "dark" ? "☀️" : "🌙";
 
   return (
     <button

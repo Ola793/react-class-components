@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export function ErrorButton() {
   const [hasError, setHasError] = useState(false);
 
   if (hasError) {
-    throw new Error('Test application error');
+    throw new Error("Test application error");
   }
 
   const handleClick = () => {

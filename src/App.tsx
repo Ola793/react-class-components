@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { Link, Outlet, useSearchParams } from 'react-router-dom';
-import { fetchCharacters } from './api/charactersApi';
-import { AppErrorBoundary } from './components/AppErrorBoundary';
-import { CardList } from './components/CardList';
-import { ErrorButton } from './components/ErrorButton';
-import { Loader } from './components/Loader';
-import { Pagination } from './components/Pagination';
-import { Search } from './components/Search';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import type { Character } from './types/character';
-import { SelectedItemsFlyout } from './components/SelectedItemsFlyout';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
-import './App.css';
+import { useEffect, useState } from "react";
+import { Link, Outlet, useSearchParams } from "react-router-dom";
+import { fetchCharacters } from "./api/charactersApi";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
+import { CardList } from "./components/CardList";
+import { ErrorButton } from "./components/ErrorButton";
+import { Loader } from "./components/Loader";
+import { Pagination } from "./components/Pagination";
+import { Search } from "./components/Search";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import type { Character } from "./types/character";
+import { SelectedItemsFlyout } from "./components/SelectedItemsFlyout";
+import { ThemeSwitcher } from "./components/ThemeSwitcher";
+import "./App.css";
 
-const STORAGE_KEY = 'searchTerm';
+const STORAGE_KEY = "searchTerm";
 const DEFAULT_PAGE = 1;
 
 const getValidPage = (page: string | null) => {
@@ -31,16 +31,15 @@ function App() {
 
   const [characters, setCharacters] = useState<Character[]>([]);
   const [totalPages, setTotalPages] = useState(DEFAULT_PAGE);
-  const { storedValue: searchTerm, updateStoredValue: setSearchTerm } =
-    useLocalStorage(STORAGE_KEY);
+  const { storedValue: searchTerm, updateStoredValue: setSearchTerm } = useLocalStorage(STORAGE_KEY);
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
-  const selectedCharacterId = searchParams.get('details');
+  const [errorMessage, setErrorMessage] = useState("");
+  const selectedCharacterId = searchParams.get("details");
 
-  const currentPage = getValidPage(searchParams.get('page'));
+  const currentPage = getValidPage(searchParams.get("page"));
 
   useEffect(() => {
-    if (!searchParams.has('page')) {
+    if (!searchParams.has("page")) {
       setSearchParams({ page: String(DEFAULT_PAGE) }, { replace: true });
     }
   }, [searchParams, setSearchParams]);
@@ -58,16 +57,13 @@ function App() {
 
         setCharacters(data.results);
         setTotalPages(data.info.pages);
-        setErrorMessage('');
+        setErrorMessage("");
       } catch (error) {
         if (!isActualRequest) {
           return;
         }
 
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Something went wrong. Please try again.';
+        const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
 
         setCharacters([]);
         setTotalPages(DEFAULT_PAGE);
@@ -104,8 +100,8 @@ function App() {
   const handleCharacterSelect = (characterId: number) => {
     const nextParams = new URLSearchParams(searchParams);
 
-    nextParams.set('page', String(currentPage));
-    nextParams.set('details', String(characterId));
+    nextParams.set("page", String(currentPage));
+    nextParams.set("details", String(characterId));
 
     setSearchParams(nextParams);
   };
@@ -113,8 +109,8 @@ function App() {
   const handleDetailsClose = () => {
     const nextParams = new URLSearchParams(searchParams);
 
-    nextParams.delete('details');
-    nextParams.set('page', String(currentPage));
+    nextParams.delete("details");
+    nextParams.set("page", String(currentPage));
 
     setSearchParams(nextParams);
   };
@@ -131,11 +127,7 @@ function App() {
     return (
       <>
         <CardList characters={characters} onSelect={handleCharacterSelect} />
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
       </>
     );
   };

@@ -1,5 +1,5 @@
-import type { Character } from '../types/character';
-import { Card } from './Card';
+import type { Character } from "../types/character";
+import { Card } from "./Card";
 
 interface CardListProps {
   characters: Character[];
@@ -14,11 +14,7 @@ export function CardList({ characters, onSelect }: CardListProps) {
   return (
     <div className="card-list">
       {characters.map((character) => (
-        <Card
-          key={character.id}
-          character={character}
-          onSelect={onSelect}
-        />
+        <Card key={character.id} character={character} onSelect={onSelect} />
       ))}
     </div>
   );

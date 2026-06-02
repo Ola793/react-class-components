@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchCharacters } from './charactersApi';
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { fetchCharacters } from "./charactersApi";
 
 const characterResponse = {
   info: {
@@ -11,54 +11,50 @@ const characterResponse = {
   results: [
     {
       id: 1,
-      name: 'Rick Sanchez',
-      status: 'Alive',
-      species: 'Human',
-      image: 'https://example.com/rick.png',
+      name: "Rick Sanchez",
+      status: "Alive",
+      species: "Human",
+      image: "https://example.com/rick.png",
     },
   ],
 };
 
-describe('fetchCharacters', () => {
+describe("fetchCharacters", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('fetches the first page of all characters when search term is empty', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+  it("fetches the first page of all characters when search term is empty", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
       json: async () => characterResponse,
     } as Response);
 
-    const characters = await fetchCharacters('');
+    const characters = await fetchCharacters("");
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://rickandmortyapi.com/api/character?page=1'
-    );
+    expect(fetchMock).toHaveBeenCalledWith("https://rickandmortyapi.com/api/character?page=1");
     expect(characters).toEqual(characterResponse);
   });
 
-  it('fetches the first page with search term when search term is provided', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+  it("fetches the first page with search term when search term is provided", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
       json: async () => characterResponse,
     } as Response);
 
-    const characters = await fetchCharacters('Rick');
+    const characters = await fetchCharacters("Rick");
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://rickandmortyapi.com/api/character?page=1&name=Rick'
-    );
+    expect(fetchMock).toHaveBeenCalledWith("https://rickandmortyapi.com/api/character?page=1&name=Rick");
     expect(characters).toEqual(characterResponse);
   });
 
-  it('throws a readable error when response is not successful', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+  it("throws a readable error when response is not successful", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: false,
     } as Response);
 
-    await expect(fetchCharacters('Unknown')).rejects.toThrow(
-      'Unable to load characters. Please try another search term.'
+    await expect(fetchCharacters("Unknown")).rejects.toThrow(
+      "Unable to load characters. Please try another search term."
     );
   });
 });

@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Loader } from './Loader';
+import { describe, expect, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { Loader } from "./Loader";
 
-describe('Loader', () => {
-  it('renders loading indicator', () => {
+describe("Loader", () => {
+  it("renders loading indicator", () => {
     render(<Loader />);
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();

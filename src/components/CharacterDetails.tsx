@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { fetchCharacterById } from '../api/charactersApi';
-import type { Character } from '../types/character';
-import { Loader } from './Loader';
+import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import { fetchCharacterById } from "../api/charactersApi";
+import type { Character } from "../types/character";
+import { Loader } from "./Loader";
 
 interface DetailsContext {
   characterId: string | null;
@@ -20,7 +20,7 @@ export function CharacterDetails() {
   const [detailsState, setDetailsState] = useState<CharacterDetailsState>({
     loadedCharacterId: null,
     character: null,
-    errorMessage: '',
+    errorMessage: "",
   });
 
   useEffect(() => {
@@ -41,17 +41,14 @@ export function CharacterDetails() {
         setDetailsState({
           loadedCharacterId: characterId,
           character: data,
-          errorMessage: '',
+          errorMessage: "",
         });
       } catch (error) {
         if (!isActualRequest) {
           return;
         }
 
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Unable to load character details. Please try again.';
+        const message = error instanceof Error ? error.message : "Unable to load character details. Please try again.";
 
         setDetailsState({
           loadedCharacterId: characterId,
@@ -82,29 +79,17 @@ export function CharacterDetails() {
 
       {isLoading && <Loader />}
 
-      {!isLoading && detailsState.errorMessage && (
-        <p className="error-message">{detailsState.errorMessage}</p>
-      )}
+      {!isLoading && detailsState.errorMessage && <p className="error-message">{detailsState.errorMessage}</p>}
 
       {!isLoading && detailsState.character && (
         <>
-          <img
-            src={detailsState.character.image}
-            alt={detailsState.character.name}
-            className="details-panel__image"
-          />
+          <img src={detailsState.character.image} alt={detailsState.character.name} className="details-panel__image" />
           <h2>{detailsState.character.name}</h2>
           <p>Status: {detailsState.character.status}</p>
           <p>Species: {detailsState.character.species}</p>
-          {detailsState.character.gender && (
-            <p>Gender: {detailsState.character.gender}</p>
-          )}
-          {detailsState.character.origin && (
-            <p>Origin: {detailsState.character.origin.name}</p>
-          )}
-          {detailsState.character.location && (
-            <p>Location: {detailsState.character.location.name}</p>
-          )}
+          {detailsState.character.gender && <p>Gender: {detailsState.character.gender}</p>}
+          {detailsState.character.origin && <p>Origin: {detailsState.character.origin.name}</p>}
+          {detailsState.character.location && <p>Location: {detailsState.character.location.name}</p>}
         </>
       )}
     </aside>

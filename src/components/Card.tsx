@@ -1,6 +1,6 @@
-import type { ChangeEvent } from 'react';
-import { useSelectedItemsStore } from '../store/selectedItemsStore';
-import type { Character } from '../types/character';
+import type { ChangeEvent } from "react";
+import { useSelectedItemsStore } from "../store/selectedItemsStore";
+import type { Character } from "../types/character";
 
 interface CardProps {
   character: Character;
@@ -20,11 +20,7 @@ export function Card({ character, onSelect }: CardProps) {
 
   return (
     <article className="card">
-      <button
-        className="card__button"
-        type="button"
-        onClick={() => onSelect(character.id)}
-      >
+      <button className="card__button" type="button" onClick={() => onSelect(character.id)}>
         <label className="card__checkbox" onClick={(event) => event.stopPropagation()}>
           <input
             type="checkbox"
@@ -34,11 +30,7 @@ export function Card({ character, onSelect }: CardProps) {
           />
         </label>
 
-        <img
-          src={character.image}
-          alt={character.name}
-          className="card__image"
-        />
+        <img src={character.image} alt={character.name} className="card__image" />
 
         <div>
           <h3 className="card__title">{character.name}</h3>

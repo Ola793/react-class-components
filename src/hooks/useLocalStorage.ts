@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-export function useLocalStorage(key: string, defaultValue = '') {
+export function useLocalStorage(key: string, defaultValue = "") {
   const [storedValue, setStoredValue] = useState(() => {
     return localStorage.getItem(key) ?? defaultValue;
   });
