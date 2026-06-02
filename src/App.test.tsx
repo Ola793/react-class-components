@@ -14,10 +14,10 @@ vi.mock("./api/charactersApi", () => ({
 
 const mockedFetchCharacters = vi.mocked(fetchCharacters);
 
-const createCharactersResponse = (characters: Character[]) => ({
+const createCharactersResponse = (characters: Character[], pages = 1) => ({
   info: {
     count: characters.length,
-    pages: 1,
+    pages,
     next: null,
     prev: null,
   },
@@ -29,7 +29,8 @@ const createTestQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        gcTime: 0,
+        gcTime: Infinity,
+        staleTime: Infinity,
       },
     },
   });
@@ -168,5 +169,34 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: /search/i }));
 
     expect(mockedFetchCharacters).not.toHaveBeenCalled();
+  });
+
+  it("uses cached page data and refetches after refresh", async () => {
+    const user = userEvent.setup();
+
+    mockedFetchCharacters
+      .mockResolvedValueOnce(createCharactersResponse([rick], 2))
+      .mockResolvedValueOnce(createCharactersResponse([morty], 2))
+      .mockResolvedValueOnce(createCharactersResponse([rick], 2));
+
+    renderApp();
+
+    expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    expect(await screen.findByText(/morty smith/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /previous/i }));
+
+    expect(await screen.findByText(/rick sanchez/i)).toBeInTheDocument();
+
+    expect(mockedFetchCharacters).toHaveBeenCalledTimes(2);
+
+    await user.click(screen.getByRole("button", { name: /refresh list/i }));
+
+    await waitFor(() => {
+      expect(mockedFetchCharacters).toHaveBeenCalledTimes(3);
+    });
   });
 });

@@ -24,6 +24,7 @@ const createTestQueryClient = () =>
       queries: {
         retry: false,
         gcTime: 0,
+        staleTime: Infinity,
       },
     },
   });
