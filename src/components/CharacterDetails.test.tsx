@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useOutletContext } from "react-router-dom";
@@ -16,6 +17,26 @@ vi.mock("../api/charactersApi", () => ({
 
 const mockedUseOutletContext = vi.mocked(useOutletContext);
 const mockedFetchCharacterById = vi.mocked(fetchCharacterById);
+
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+
+const renderCharacterDetails = () => {
+  const queryClient = createTestQueryClient();
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <CharacterDetails />
+    </QueryClientProvider>
+  );
+};
 
 const rick: Character = {
   id: 1,
@@ -44,7 +65,7 @@ describe("CharacterDetails", () => {
       onClose: vi.fn(),
     });
 
-    const { container } = render(<CharacterDetails />);
+    const { container } = renderCharacterDetails();
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -56,7 +77,7 @@ describe("CharacterDetails", () => {
     });
     mockedFetchCharacterById.mockResolvedValue(rick);
 
-    render(<CharacterDetails />);
+    renderCharacterDetails();
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
 
@@ -76,7 +97,7 @@ describe("CharacterDetails", () => {
     });
     mockedFetchCharacterById.mockRejectedValue(new Error("Unable to load character details."));
 
-    render(<CharacterDetails />);
+    renderCharacterDetails();
 
     expect(await screen.findByText(/unable to load character details/i)).toBeInTheDocument();
   });
@@ -91,7 +112,7 @@ describe("CharacterDetails", () => {
     });
     mockedFetchCharacterById.mockResolvedValue(rick);
 
-    render(<CharacterDetails />);
+    renderCharacterDetails();
 
     await user.click(screen.getByRole("button", { name: /close/i }));
 
