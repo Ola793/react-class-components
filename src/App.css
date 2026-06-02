@@ -85,6 +85,8 @@ input {
 .pagination button,
 .details-panel__close,
 .selected-flyout button,
+.theme-switcher,
+.refresh-button,
 .error-button {
   padding: 10px 16px;
   color: #111820;
@@ -112,6 +114,16 @@ input {
 
 .error-button:hover {
   background: #b91c1c;
+}
+
+.refresh-button {
+  display: block;
+  margin: 0 0 16px auto;
+}
+
+.refresh-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .card-list {

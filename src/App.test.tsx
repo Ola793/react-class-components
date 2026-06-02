@@ -6,6 +6,7 @@ import App from "./App";
 import { fetchCharacters } from "./api/charactersApi";
 import type { Character } from "./types/character";
 import { ThemeProvider } from "./context/ThemeProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("./api/charactersApi", () => ({
   fetchCharacters: vi.fn(),
@@ -23,13 +24,27 @@ const createCharactersResponse = (characters: Character[]) => ({
   results: characters,
 });
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+
 const renderApp = () => {
+  const queryClient = createTestQueryClient();
+
   return render(
-    <MemoryRouter initialEntries={["/?page=1"]}>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={["/?page=1"]}>
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 };
 
