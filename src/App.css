@@ -100,6 +100,7 @@ input {
 .search__button:hover,
 .pagination button:hover:not(:disabled),
 .details-panel__close:hover,
+.refresh-button:hover,
 .selected-flyout button:hover {
   opacity: 0.9;
 }
