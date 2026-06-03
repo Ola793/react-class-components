@@ -4,11 +4,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: PaginationProps) {
+export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) {
     return null;
   }
@@ -18,11 +14,7 @@ export function Pagination({
 
   return (
     <nav className="pagination" aria-label="Pagination">
-      <button
-        type="button"
-        disabled={isFirstPage}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
+      <button type="button" disabled={isFirstPage} onClick={() => onPageChange(currentPage - 1)}>
         Previous
       </button>
 
@@ -30,11 +22,7 @@ export function Pagination({
         Page {currentPage} of {totalPages}
       </span>
 
-      <button
-        type="button"
-        disabled={isLastPage}
-        onClick={() => onPageChange(currentPage + 1)}
-      >
+      <button type="button" disabled={isLastPage} onClick={() => onPageChange(currentPage + 1)}>
         Next
       </button>
     </nav>

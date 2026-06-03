@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useState } from "react";
 
 interface SearchProps {
   initialValue: string;

@@ -1,78 +1,41 @@
-import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { fetchCharacterById } from '../api/charactersApi';
-import type { Character } from '../types/character';
-import { Loader } from './Loader';
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useOutletContext } from "react-router-dom";
+import { Loader } from "./Loader";
+import { useCharacterDetailsQuery } from "../hooks/useCharacterDetailsQuery";
+import { queryKeys } from "../query/queryKeys";
 
 interface DetailsContext {
   characterId: string | null;
   onClose: () => void;
 }
 
-interface CharacterDetailsState {
-  loadedCharacterId: string | null;
-  character: Character | null;
-  errorMessage: string;
-}
-
 export function CharacterDetails() {
   const { characterId, onClose } = useOutletContext<DetailsContext>();
-  const [detailsState, setDetailsState] = useState<CharacterDetailsState>({
-    loadedCharacterId: null,
-    character: null,
-    errorMessage: '',
-  });
-
-  useEffect(() => {
-    if (!characterId) {
-      return;
-    }
-
-    let isActualRequest = true;
-
-    const loadCharacter = async () => {
-      try {
-        const data = await fetchCharacterById(characterId);
-
-        if (!isActualRequest) {
-          return;
-        }
-
-        setDetailsState({
-          loadedCharacterId: characterId,
-          character: data,
-          errorMessage: '',
-        });
-      } catch (error) {
-        if (!isActualRequest) {
-          return;
-        }
-
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Unable to load character details. Please try again.';
-
-        setDetailsState({
-          loadedCharacterId: characterId,
-          character: null,
-          errorMessage: message,
-        });
-      }
-    };
-
-    void loadCharacter();
-
-    return () => {
-      isActualRequest = false;
-    };
-  }, [characterId]);
+  const queryClient = useQueryClient();
+  const [isRefreshingDetails, setIsRefreshingDetails] = useState(false);
+  const { data, isLoading, isError, error, refetch } = useCharacterDetailsQuery(characterId);
 
   if (!characterId) {
     return null;
   }
 
-  const isLoading = detailsState.loadedCharacterId !== characterId;
+  const handleRefresh = async () => {
+    setIsRefreshingDetails(true);
+
+    try {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.characterDetails(characterId),
+        refetchType: "none",
+      });
+
+      await refetch();
+    } finally {
+      setIsRefreshingDetails(false);
+    }
+  };
+
+  const errorMessage = error instanceof Error ? error.message : "Unable to load character details. Please try again.";
 
   return (
     <aside className="details-panel">
@@ -80,31 +43,23 @@ export function CharacterDetails() {
         Close
       </button>
 
+      <button type="button" className="refresh-button" onClick={handleRefresh} disabled={isRefreshingDetails}>
+        {isRefreshingDetails ? "Refreshing..." : "Refresh details"}
+      </button>
+
       {isLoading && <Loader />}
 
-      {!isLoading && detailsState.errorMessage && (
-        <p className="error-message">{detailsState.errorMessage}</p>
-      )}
+      {!isLoading && isError && <p className="error-message">{errorMessage}</p>}
 
-      {!isLoading && detailsState.character && (
+      {!isLoading && data && (
         <>
-          <img
-            src={detailsState.character.image}
-            alt={detailsState.character.name}
-            className="details-panel__image"
-          />
-          <h2>{detailsState.character.name}</h2>
-          <p>Status: {detailsState.character.status}</p>
-          <p>Species: {detailsState.character.species}</p>
-          {detailsState.character.gender && (
-            <p>Gender: {detailsState.character.gender}</p>
-          )}
-          {detailsState.character.origin && (
-            <p>Origin: {detailsState.character.origin.name}</p>
-          )}
-          {detailsState.character.location && (
-            <p>Location: {detailsState.character.location.name}</p>
-          )}
+          <img src={data.image} alt={data.name} className="details-panel__image" />
+          <h2>{data.name}</h2>
+          <p>Status: {data.status}</p>
+          <p>Species: {data.species}</p>
+          {data.gender && <p>Gender: {data.gender}</p>}
+          {data.origin && <p>Origin: {data.origin.name}</p>}
+          {data.location && <p>Location: {data.location.name}</p>}
         </>
       )}
     </aside>

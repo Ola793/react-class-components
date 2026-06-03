@@ -1,19 +1,20 @@
-import { useEffect, useState } from 'react';
-import { Link, Outlet, useSearchParams } from 'react-router-dom';
-import { fetchCharacters } from './api/charactersApi';
-import { AppErrorBoundary } from './components/AppErrorBoundary';
-import { CardList } from './components/CardList';
-import { ErrorButton } from './components/ErrorButton';
-import { Loader } from './components/Loader';
-import { Pagination } from './components/Pagination';
-import { Search } from './components/Search';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import type { Character } from './types/character';
-import { SelectedItemsFlyout } from './components/SelectedItemsFlyout';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
-import './App.css';
+import { useEffect, useState } from "react";
+import { Link, Outlet, useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
+import { CardList } from "./components/CardList";
+import { ErrorButton } from "./components/ErrorButton";
+import { Loader } from "./components/Loader";
+import { Pagination } from "./components/Pagination";
+import { Search } from "./components/Search";
+import { SelectedItemsFlyout } from "./components/SelectedItemsFlyout";
+import { ThemeSwitcher } from "./components/ThemeSwitcher";
+import { useCharactersQuery } from "./hooks/useCharactersQuery";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import { queryKeys } from "./query/queryKeys";
+import "./App.css";
 
-const STORAGE_KEY = 'searchTerm';
+const STORAGE_KEY = "searchTerm";
 const DEFAULT_PAGE = 1;
 
 const getValidPage = (page: string | null) => {
@@ -28,63 +29,24 @@ const getValidPage = (page: string | null) => {
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const [isRefreshingList, setIsRefreshingList] = useState(false);
 
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [totalPages, setTotalPages] = useState(DEFAULT_PAGE);
-  const { storedValue: searchTerm, updateStoredValue: setSearchTerm } =
-    useLocalStorage(STORAGE_KEY);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
-  const selectedCharacterId = searchParams.get('details');
+  const { storedValue: searchTerm, updateStoredValue: setSearchTerm } = useLocalStorage(STORAGE_KEY);
 
-  const currentPage = getValidPage(searchParams.get('page'));
+  const selectedCharacterId = searchParams.get("details");
+  const currentPage = getValidPage(searchParams.get("page"));
+
+  const { data, isLoading, isError, error, refetch } = useCharactersQuery(searchTerm, currentPage);
+
+  const characters = data?.results ?? [];
+  const totalPages = data?.info.pages ?? DEFAULT_PAGE;
 
   useEffect(() => {
-    if (!searchParams.has('page')) {
+    if (!searchParams.has("page")) {
       setSearchParams({ page: String(DEFAULT_PAGE) }, { replace: true });
     }
   }, [searchParams, setSearchParams]);
-
-  useEffect(() => {
-    let isActualRequest = true;
-
-    const loadCharacters = async () => {
-      try {
-        const data = await fetchCharacters(searchTerm, currentPage);
-
-        if (!isActualRequest) {
-          return;
-        }
-
-        setCharacters(data.results);
-        setTotalPages(data.info.pages);
-        setErrorMessage('');
-      } catch (error) {
-        if (!isActualRequest) {
-          return;
-        }
-
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Something went wrong. Please try again.';
-
-        setCharacters([]);
-        setTotalPages(DEFAULT_PAGE);
-        setErrorMessage(message);
-      } finally {
-        if (isActualRequest) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadCharacters();
-
-    return () => {
-      isActualRequest = false;
-    };
-  }, [searchTerm, currentPage]);
 
   const handleSearch = (value: string) => {
     const trimmedValue = value.trim();
@@ -104,8 +66,8 @@ function App() {
   const handleCharacterSelect = (characterId: number) => {
     const nextParams = new URLSearchParams(searchParams);
 
-    nextParams.set('page', String(currentPage));
-    nextParams.set('details', String(characterId));
+    nextParams.set("page", String(currentPage));
+    nextParams.set("details", String(characterId));
 
     setSearchParams(nextParams);
   };
@@ -113,10 +75,25 @@ function App() {
   const handleDetailsClose = () => {
     const nextParams = new URLSearchParams(searchParams);
 
-    nextParams.delete('details');
-    nextParams.set('page', String(currentPage));
+    nextParams.delete("details");
+    nextParams.set("page", String(currentPage));
 
     setSearchParams(nextParams);
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshingList(true);
+
+    try {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.characters(searchTerm, currentPage),
+        refetchType: "none",
+      });
+
+      await refetch();
+    } finally {
+      setIsRefreshingList(false);
+    }
   };
 
   const renderResults = () => {
@@ -124,18 +101,21 @@ function App() {
       return <Loader />;
     }
 
-    if (errorMessage) {
-      return <p className="error-message">{errorMessage}</p>;
+    if (isError) {
+      const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+
+      return <p className="error-message">{message}</p>;
     }
 
     return (
       <>
+        <button className="refresh-button" type="button" onClick={handleRefresh} disabled={isRefreshingList}>
+          {isRefreshingList ? "Refreshing..." : "Refresh list"}
+        </button>
+
         <CardList characters={characters} onSelect={handleCharacterSelect} />
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
       </>
     );
   };
@@ -165,6 +145,7 @@ function App() {
             onClose: handleDetailsClose,
           }}
         />
+
         <SelectedItemsFlyout />
         <ErrorButton />
       </main>

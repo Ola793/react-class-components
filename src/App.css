@@ -7,7 +7,12 @@ body {
   background: #101418;
   color: #f5f7fa;
   font-family:
-    Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 button,
@@ -80,6 +85,8 @@ input {
 .pagination button,
 .details-panel__close,
 .selected-flyout button,
+.theme-switcher,
+.refresh-button,
 .error-button {
   padding: 10px 16px;
   color: #111820;
@@ -93,6 +100,7 @@ input {
 .search__button:hover,
 .pagination button:hover:not(:disabled),
 .details-panel__close:hover,
+.refresh-button:hover,
 .selected-flyout button:hover {
   opacity: 0.9;
 }
@@ -107,6 +115,16 @@ input {
 
 .error-button:hover {
   background: #b91c1c;
+}
+
+.refresh-button {
+  display: block;
+  margin: 0 0 16px auto;
+}
+
+.refresh-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .card-list {

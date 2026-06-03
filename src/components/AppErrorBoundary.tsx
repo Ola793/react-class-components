@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface AppErrorBoundaryProps {
   children: ReactNode;
@@ -8,10 +8,7 @@ interface AppErrorBoundaryState {
   hasError: boolean;
 }
 
-export class AppErrorBoundary extends Component<
-  AppErrorBoundaryProps,
-  AppErrorBoundaryState
-> {
+export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
   constructor(props: AppErrorBoundaryProps) {
     super(props);
 
@@ -27,7 +24,7 @@ export class AppErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Application error:', error, errorInfo);
+    console.error("Application error:", error, errorInfo);
   }
 
   render() {

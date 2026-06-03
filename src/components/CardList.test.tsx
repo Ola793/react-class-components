@@ -1,27 +1,27 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
-import { CardList } from './CardList';
-import type { Character } from '../types/character';
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { CardList } from "./CardList";
+import type { Character } from "../types/character";
 
 const characters: Character[] = [
   {
     id: 1,
-    name: 'Rick Sanchez',
-    status: 'Alive',
-    species: 'Human',
-    image: 'https://example.com/rick.png',
+    name: "Rick Sanchez",
+    status: "Alive",
+    species: "Human",
+    image: "https://example.com/rick.png",
   },
   {
     id: 2,
-    name: 'Morty Smith',
-    status: 'Alive',
-    species: 'Human',
-    image: 'https://example.com/morty.png',
+    name: "Morty Smith",
+    status: "Alive",
+    species: "Human",
+    image: "https://example.com/morty.png",
   },
 ];
 
-describe('CardList', () => {
-  it('renders all provided characters', () => {
+describe("CardList", () => {
+  it("renders all provided characters", () => {
     const onSelect = vi.fn();
     render(<CardList characters={characters} onSelect={onSelect} />);
 
@@ -29,7 +29,7 @@ describe('CardList', () => {
     expect(screen.getByText(/morty smith/i)).toBeInTheDocument();
   });
 
-  it('renders empty message when there are no characters', () => {
+  it("renders empty message when there are no characters", () => {
     const onSelect = vi.fn();
     render(<CardList characters={[]} onSelect={onSelect} />);
 
