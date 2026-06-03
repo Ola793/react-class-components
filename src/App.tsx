@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, Outlet, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppErrorBoundary } from "./components/AppErrorBoundary";
@@ -30,13 +30,14 @@ const getValidPage = (page: string | null) => {
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const [isRefreshingList, setIsRefreshingList] = useState(false);
 
   const { storedValue: searchTerm, updateStoredValue: setSearchTerm } = useLocalStorage(STORAGE_KEY);
 
   const selectedCharacterId = searchParams.get("details");
   const currentPage = getValidPage(searchParams.get("page"));
 
-  const { data, isLoading, isFetching, isError, error } = useCharactersQuery(searchTerm, currentPage);
+  const { data, isLoading, isError, error, refetch } = useCharactersQuery(searchTerm, currentPage);
 
   const characters = data?.results ?? [];
   const totalPages = data?.info.pages ?? DEFAULT_PAGE;
@@ -80,10 +81,19 @@ function App() {
     setSearchParams(nextParams);
   };
 
-  const handleRefresh = () => {
-    void queryClient.invalidateQueries({
-      queryKey: queryKeys.characters(searchTerm, currentPage),
-    });
+  const handleRefresh = async () => {
+    setIsRefreshingList(true);
+
+    try {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.characters(searchTerm, currentPage),
+        refetchType: "none",
+      });
+
+      await refetch();
+    } finally {
+      setIsRefreshingList(false);
+    }
   };
 
   const renderResults = () => {
@@ -99,8 +109,8 @@ function App() {
 
     return (
       <>
-        <button className="refresh-button" type="button" onClick={handleRefresh} disabled={isFetching}>
-          {isFetching ? "Refreshing..." : "Refresh list"}
+        <button className="refresh-button" type="button" onClick={handleRefresh} disabled={isRefreshingList}>
+          {isRefreshingList ? "Refreshing..." : "Refresh list"}
         </button>
 
         <CardList characters={characters} onSelect={handleCharacterSelect} />

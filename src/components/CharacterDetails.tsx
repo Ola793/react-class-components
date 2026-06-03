@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router-dom";
 import { Loader } from "./Loader";
@@ -12,17 +13,26 @@ interface DetailsContext {
 export function CharacterDetails() {
   const { characterId, onClose } = useOutletContext<DetailsContext>();
   const queryClient = useQueryClient();
-
-  const { data, isLoading, isFetching, isError, error } = useCharacterDetailsQuery(characterId);
+  const [isRefreshingDetails, setIsRefreshingDetails] = useState(false);
+  const { data, isLoading, isError, error, refetch } = useCharacterDetailsQuery(characterId);
 
   if (!characterId) {
     return null;
   }
 
-  const handleRefresh = () => {
-    void queryClient.invalidateQueries({
-      queryKey: queryKeys.characterDetails(characterId),
-    });
+  const handleRefresh = async () => {
+    setIsRefreshingDetails(true);
+
+    try {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.characterDetails(characterId),
+        refetchType: "none",
+      });
+
+      await refetch();
+    } finally {
+      setIsRefreshingDetails(false);
+    }
   };
 
   const errorMessage = error instanceof Error ? error.message : "Unable to load character details. Please try again.";
@@ -33,8 +43,8 @@ export function CharacterDetails() {
         Close
       </button>
 
-      <button type="button" className="refresh-button" onClick={handleRefresh} disabled={isFetching}>
-        {isFetching ? "Refreshing..." : "Refresh details"}
+      <button type="button" className="refresh-button" onClick={handleRefresh} disabled={isRefreshingDetails}>
+        {isRefreshingDetails ? "Refreshing..." : "Refresh details"}
       </button>
 
       {isLoading && <Loader />}
