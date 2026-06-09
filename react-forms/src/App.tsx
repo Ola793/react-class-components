@@ -1,8 +1,13 @@
 import { useFormStore } from './store/formStore';
 import './App.css';
+import { useState } from 'react';
+import { Modal } from './components/Modal';
 
 function App() {
   const submissions = useFormStore((state) => state.submissions);
+  const [modalType, setModalType] = useState<'uncontrolled' | 'hook-form' | null>(
+  null
+);
 
   return (
     <main className="app">
@@ -11,8 +16,13 @@ function App() {
         <p>Submit forms and see saved submissions on the page.</p>
 
         <div className="actions">
-          <button type="button">Open uncontrolled form</button>
-          <button type="button">Open React Hook Form</button>
+          <button type="button" onClick={() => setModalType('uncontrolled')}>
+            Open uncontrolled form
+          </button>
+
+          <button type="button" onClick={() => setModalType('hook-form')}>
+            Open React Hook Form
+          </button>
         </div>
       </section>
 
@@ -43,6 +53,14 @@ function App() {
           </div>
         )}
       </section>
+      {modalType && (
+        <Modal
+          title={modalType === 'uncontrolled' ? 'Uncontrolled form' : 'React Hook Form'}
+          onClose={() => setModalType(null)}
+        >
+          <p>Form will be here.</p>
+        </Modal>
+      )}
     </main>
   );
 }
