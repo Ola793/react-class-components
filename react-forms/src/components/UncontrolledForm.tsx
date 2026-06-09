@@ -23,7 +23,8 @@ export function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const image = formData.get("image");
+    const imageInput = form.elements.namedItem("image") as HTMLInputElement | null;
+    const image = imageInput?.files?.[0];
 
     const values = {
       name: String(formData.get("name") ?? ""),
@@ -34,7 +35,7 @@ export function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
       password: String(formData.get("password") ?? ""),
       confirmPassword: String(formData.get("confirmPassword") ?? ""),
       country: String(formData.get("country") ?? ""),
-      image: image instanceof File ? image : undefined,
+      image,
     };
 
     const result = formSchema.safeParse(values);
