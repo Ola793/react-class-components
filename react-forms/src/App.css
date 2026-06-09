@@ -141,3 +141,40 @@ button:hover {
 .modal__header h2 {
   margin: 0;
 }
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+}
+
+.form-field label,
+.form-checkbox label {
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field select {
+  padding: 10px 12px;
+  color: #f5f7fb;
+  background: #0b1118;
+  border: 1px solid #37465a;
+  border-radius: 10px;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-error {
+  min-height: 20px;
+  margin: 0;
+  color: #fca5a5;
+  font-size: 14px;
+}

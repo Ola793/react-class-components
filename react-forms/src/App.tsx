@@ -1,7 +1,8 @@
 import { useFormStore } from "./store/formStore";
-import "./App.css";
 import { useState } from "react";
 import { Modal } from "./components/Modal";
+import { UncontrolledForm } from "./components/UncontrolledForm";
+import "./App.css";
 
 function App() {
   const submissions = useFormStore((state) => state.submissions);
@@ -56,7 +57,11 @@ function App() {
           title={modalType === "uncontrolled" ? "Uncontrolled form" : "React Hook Form"}
           onClose={() => setModalType(null)}
         >
-          <p>Form will be here.</p>
+          {modalType === "uncontrolled" ? (
+            <UncontrolledForm onSuccess={() => setModalType(null)} />
+          ) : (
+            <p>React Hook Form will be here.</p>
+          )}
         </Modal>
       )}
     </main>
