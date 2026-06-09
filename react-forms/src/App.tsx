@@ -1,6 +1,9 @@
+import { useFormStore } from './store/formStore';
 import './App.css';
 
 function App() {
+  const submissions = useFormStore((state) => state.submissions);
+
   return (
     <main className="app">
       <section className="hero">
@@ -15,7 +18,30 @@ function App() {
 
       <section className="submissions">
         <h2>Submissions</h2>
-        <p>No submissions yet.</p>
+
+        {submissions.length === 0 ? (
+          <p>No submissions yet.</p>
+        ) : (
+          <div className="submission-list">
+            {submissions.map((submission) => (
+              <article
+                className={`submission-card ${submission.isNew ? 'submission-card--new' : ''}`}
+                key={submission.id}
+              >
+                <img src={submission.imageBase64} alt={submission.name} />
+                <div>
+                  <h3>{submission.name}</h3>
+                  <p>{submission.email}</p>
+                  <p>
+                    {submission.age} years old · {submission.gender}
+                  </p>
+                  <p>{submission.country}</p>
+                  <p>Submitted from: {submission.formType}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

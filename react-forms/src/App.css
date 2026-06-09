@@ -59,3 +59,34 @@ button:hover {
 .submissions p {
   color: #c4ccd8;
 }
+
+.submission-list {
+  display: grid;
+  gap: 16px;
+}
+
+.submission-card {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  padding: 16px;
+  background: #0b1118;
+  border: 1px solid #263241;
+  border-radius: 14px;
+}
+
+.submission-card--new {
+  border-color: #facc15;
+}
+
+.submission-card img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.submission-card h3,
+.submission-card p {
+  margin: 0 0 6px;
+}
