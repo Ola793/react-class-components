@@ -1,0 +1,180 @@
+#root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  color: #f5f7fa;
+  background: #101418;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.app {
+  width: min(1000px, 100%);
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.hero,
+.submissions {
+  padding: 28px;
+  background: #111820;
+  border: 1px solid #263241;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 20%);
+}
+
+.hero {
+  margin-bottom: 24px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+button {
+  padding: 10px 16px;
+  color: #111820;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f5f7fb;
+  border: 1px solid #3c4d63;
+  border-radius: 10px;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.submissions p {
+  color: #c4ccd8;
+}
+
+.submission-list {
+  display: grid;
+  gap: 16px;
+}
+
+.submission-card {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  padding: 16px;
+  background: #0b1118;
+  border: 1px solid #263241;
+  border-radius: 14px;
+}
+
+.submission-card--new {
+  border-color: #facc15;
+}
+
+.submission-card img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.submission-card h3,
+.submission-card p {
+  margin: 0 0 6px;
+}
+
+.password-strength {
+  display: grid;
+  gap: 4px;
+  padding-left: 20px;
+  margin: 8px 0 0;
+  color: #fca5a5;
+  font-size: 14px;
+}
+
+.password-strength .valid {
+  color: #86efac;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(0 0 0 / 60%);
+}
+
+.modal {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 24px;
+  background: #111820;
+  border: 1px solid #3c4d63;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 40%);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.modal__header h2 {
+  margin: 0;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+}
+
+.form-field label,
+.form-checkbox label {
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field select {
+  padding: 10px 12px;
+  color: #f5f7fb;
+  background: #0b1118;
+  border: 1px solid #37465a;
+  border-radius: 10px;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-error {
+  min-height: 20px;
+  margin: 0;
+  color: #fca5a5;
+  font-size: 14px;
+}
