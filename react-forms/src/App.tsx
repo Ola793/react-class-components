@@ -1,13 +1,11 @@
-import { useFormStore } from './store/formStore';
-import './App.css';
-import { useState } from 'react';
-import { Modal } from './components/Modal';
+import { useFormStore } from "./store/formStore";
+import "./App.css";
+import { useState } from "react";
+import { Modal } from "./components/Modal";
 
 function App() {
   const submissions = useFormStore((state) => state.submissions);
-  const [modalType, setModalType] = useState<'uncontrolled' | 'hook-form' | null>(
-  null
-);
+  const [modalType, setModalType] = useState<"uncontrolled" | "hook-form" | null>(null);
 
   return (
     <main className="app">
@@ -16,11 +14,11 @@ function App() {
         <p>Submit forms and see saved submissions on the page.</p>
 
         <div className="actions">
-          <button type="button" onClick={() => setModalType('uncontrolled')}>
+          <button type="button" onClick={() => setModalType("uncontrolled")}>
             Open uncontrolled form
           </button>
 
-          <button type="button" onClick={() => setModalType('hook-form')}>
+          <button type="button" onClick={() => setModalType("hook-form")}>
             Open React Hook Form
           </button>
         </div>
@@ -35,7 +33,7 @@ function App() {
           <div className="submission-list">
             {submissions.map((submission) => (
               <article
-                className={`submission-card ${submission.isNew ? 'submission-card--new' : ''}`}
+                className={`submission-card ${submission.isNew ? "submission-card--new" : ""}`}
                 key={submission.id}
               >
                 <img src={submission.imageBase64} alt={submission.name} />
@@ -55,7 +53,7 @@ function App() {
       </section>
       {modalType && (
         <Modal
-          title={modalType === 'uncontrolled' ? 'Uncontrolled form' : 'React Hook Form'}
+          title={modalType === "uncontrolled" ? "Uncontrolled form" : "React Hook Form"}
           onClose={() => setModalType(null)}
         >
           <p>Form will be here.</p>

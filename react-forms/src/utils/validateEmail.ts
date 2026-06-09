@@ -1,5 +1,5 @@
 export function validateEmail(value: string) {
-  const parts = value.split('@');
+  const parts = value.split("@");
 
   if (parts.length !== 2) {
     return false;
@@ -11,5 +11,5 @@ export function validateEmail(value: string) {
     return false;
   }
 
-  return domain.includes('.');
+  return domain.includes(".");
 }

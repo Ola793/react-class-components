@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export type FormType = 'uncontrolled' | 'react-hook-form';
+export type FormType = "uncontrolled" | "react-hook-form";
 
 export interface FormSubmission {
   id: string;
@@ -20,12 +20,12 @@ export interface FormSubmission {
 interface FormStore {
   countries: string[];
   submissions: FormSubmission[];
-  addSubmission: (submission: Omit<FormSubmission, 'id' | 'createdAt' | 'isNew'>) => void;
+  addSubmission: (submission: Omit<FormSubmission, "id" | "createdAt" | "isNew">) => void;
   markSubmissionAsSeen: (id: string) => void;
 }
 
 export const useFormStore = create<FormStore>((set) => ({
-  countries: ['Poland', 'Ukraine', 'Germany', 'France', 'Spain', 'Italy', 'United Kingdom', 'United States'],
+  countries: ["Poland", "Ukraine", "Germany", "France", "Spain", "Italy", "United Kingdom", "United States"],
 
   submissions: [],
 

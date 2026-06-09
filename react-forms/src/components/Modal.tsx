@@ -1,5 +1,5 @@
-import { type ReactNode, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { type ReactNode, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   title: string;
@@ -7,8 +7,7 @@ interface ModalProps {
   onClose: () => void;
 }
 
-const focusableSelector =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 export function Modal({ title, children, onClose }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -17,23 +16,20 @@ export function Modal({ title, children, onClose }: ModalProps) {
   useEffect(() => {
     previousActiveElement.current = document.activeElement as HTMLElement | null;
 
-    const focusableElements =
-      modalRef.current?.querySelectorAll<HTMLElement>(focusableSelector);
+    const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(focusableSelector);
 
     focusableElements?.[0]?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         onClose();
       }
 
-      if (event.key !== 'Tab') {
+      if (event.key !== "Tab") {
         return;
       }
 
-      const elements = Array.from(
-        modalRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? []
-      );
+      const elements = Array.from(modalRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? []);
 
       if (elements.length === 0) {
         return;
@@ -53,10 +49,10 @@ export function Modal({ title, children, onClose }: ModalProps) {
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
       previousActiveElement.current?.focus();
     };
   }, [onClose]);
