@@ -46,4 +46,5 @@ export const formSchema = z
     message: "Passwords must match",
   });
 
-export type FormValues = z.infer<typeof formSchema>;
+export type FormInputValues = z.input<typeof formSchema>;
+export type FormValues = z.output<typeof formSchema>;

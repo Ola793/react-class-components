@@ -2,6 +2,7 @@ import { useFormStore } from "./store/formStore";
 import { useState } from "react";
 import { Modal } from "./components/Modal";
 import { UncontrolledForm } from "./components/UncontrolledForm";
+import { HookForm } from "./components/HookForm";
 import "./App.css";
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
           </div>
         )}
       </section>
+
       {modalType && (
         <Modal
           title={modalType === "uncontrolled" ? "Uncontrolled form" : "React Hook Form"}
@@ -60,7 +62,7 @@ function App() {
           {modalType === "uncontrolled" ? (
             <UncontrolledForm onSuccess={() => setModalType(null)} />
           ) : (
-            <p>React Hook Form will be here.</p>
+            <HookForm onSuccess={() => setModalType(null)} />
           )}
         </Modal>
       )}
