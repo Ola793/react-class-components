@@ -1,5 +1,5 @@
+import { useEffect, useState } from "react";
 import { useFormStore } from "./store/formStore";
-import { useState } from "react";
 import { Modal } from "./components/Modal";
 import { UncontrolledForm } from "./components/UncontrolledForm";
 import { HookForm } from "./components/HookForm";
@@ -8,6 +8,25 @@ import "./App.css";
 function App() {
   const submissions = useFormStore((state) => state.submissions);
   const [modalType, setModalType] = useState<"uncontrolled" | "hook-form" | null>(null);
+  const markSubmissionAsSeen = useFormStore((state) => state.markSubmissionAsSeen);
+
+  useEffect(() => {
+    const newSubmissions = submissions.filter((submission) => submission.isNew);
+
+    if (newSubmissions.length === 0) {
+      return;
+    }
+
+    const timeoutIds = newSubmissions.map((submission) =>
+      window.setTimeout(() => {
+        markSubmissionAsSeen(submission.id);
+      }, 3000)
+    );
+
+    return () => {
+      timeoutIds.forEach(window.clearTimeout);
+    };
+  }, [submissions, markSubmissionAsSeen]);
 
   return (
     <main className="app">
