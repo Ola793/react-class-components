@@ -20,6 +20,7 @@ export function HookForm({ onSuccess }: HookFormProps) {
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors, isValid },
   } = useForm<FormInputValues, undefined, FormValues>({
     resolver: zodResolver(formSchema),
@@ -126,7 +127,17 @@ export function HookForm({ onSuccess }: HookFormProps) {
           type="file"
           accept="image/png,image/jpeg"
           {...register("image", {
-            setValueAs: (files: FileList) => files.item(0),
+            onChange: (event) => {
+              const input = event.target as HTMLInputElement;
+              const file = input.files?.[0];
+
+              if (file) {
+                setValue("image", file, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+              }
+            },
           })}
         />
         {errors.image && <p className="form-error">{errors.image.message}</p>}
