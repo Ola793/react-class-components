@@ -90,3 +90,16 @@ button:hover {
 .submission-card p {
   margin: 0 0 6px;
 }
+
+.password-strength {
+  display: grid;
+  gap: 4px;
+  padding-left: 20px;
+  margin: 8px 0 0;
+  color: #fca5a5;
+  font-size: 14px;
+}
+
+.password-strength .valid {
+  color: #86efac;
+}
