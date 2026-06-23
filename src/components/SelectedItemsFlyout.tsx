@@ -1,5 +1,6 @@
+"use client";
+
 import { useSelectedItemsStore } from "../store/selectedItemsStore";
-import { downloadSelectedItemsCsv } from "../utils/downloadCsv";
 
 export function SelectedItemsFlyout() {
   const selectedItems = useSelectedItemsStore((state) => state.selectedItems);
@@ -10,16 +11,20 @@ export function SelectedItemsFlyout() {
   }
 
   return (
-    <div className="selected-flyout">
+    <aside className="selected-flyout">
       <p>Selected items: {selectedItems.length}</p>
+
+      <form action="/api/csv" method="post">
+        {selectedItems.map((item) => (
+          <input key={item.id} type="hidden" name="ids" value={item.id} />
+        ))}
+
+        <button type="submit">Download</button>
+      </form>
 
       <button type="button" onClick={clearItems}>
         Unselect all
       </button>
-
-      <button type="button" onClick={() => downloadSelectedItemsCsv(selectedItems)}>
-        Download
-      </button>
-    </div>
+    </aside>
   );
 }

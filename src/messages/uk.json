@@ -1,0 +1,33 @@
+{
+  "Navigation": {
+    "home": "Головна",
+    "about": "Про застосунок"
+  },
+  "HomePage": {
+    "title": "Пошук персонажів",
+    "resultsTitle": "Результати",
+    "searchPlaceholder": "Пошук персонажів за іменем",
+    "searchButton": "Пошук",
+    "refreshList": "Оновити список",
+    "refreshing": "Оновлення...",
+    "emptyResults": "Результатів не знайдено.",
+    "previous": "Назад",
+    "next": "Далі",
+    "pageInfo": "Сторінка {currentPage} з {totalPages}"
+  },
+  "AboutPage": {
+    "title": "Про застосунок",
+    "description": "Цей застосунок дозволяє шукати персонажів Rick and Morty, переглядати деталі, вибирати елементи та експортувати вибрані дані у CSV."
+  },
+  "NotFoundPage": {
+    "title": "Сторінку не знайдено",
+    "description": "Сторінка, яку ви шукаєте, не існує.",
+    "backHome": "На головну"
+  },
+  "Theme": {
+    "toggle": "Перемкнути тему"
+  },
+  "Language": {
+    "label": "Мова"
+  }
+}

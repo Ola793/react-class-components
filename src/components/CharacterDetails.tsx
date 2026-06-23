@@ -1,65 +1,63 @@
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useOutletContext } from "react-router-dom";
-import { Loader } from "./Loader";
-import { useCharacterDetailsQuery } from "../hooks/useCharacterDetailsQuery";
-import { queryKeys } from "../query/queryKeys";
+import Image from "next/image";
+import { fetchCharacterById } from "../api/charactersApi";
+import { Link } from "../i18n/navigation";
 
-interface DetailsContext {
-  characterId: string | null;
-  onClose: () => void;
+interface CharacterDetailsProps {
+  characterId: string;
+  currentPage: number;
+  searchTerm: string;
 }
 
-export function CharacterDetails() {
-  const { characterId, onClose } = useOutletContext<DetailsContext>();
-  const queryClient = useQueryClient();
-  const [isRefreshingDetails, setIsRefreshingDetails] = useState(false);
-  const { data, isLoading, isError, error, refetch } = useCharacterDetailsQuery(characterId);
+const createCloseHref = (currentPage: number, searchTerm: string) => {
+  const params = new URLSearchParams();
 
-  if (!characterId) {
-    return null;
+  params.set("page", String(currentPage));
+
+  if (searchTerm) {
+    params.set("query", searchTerm);
   }
 
-  const handleRefresh = async () => {
-    setIsRefreshingDetails(true);
+  return `/?${params.toString()}`;
+};
 
-    try {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.characterDetails(characterId),
-        refetchType: "none",
-      });
+export async function CharacterDetails({
+  characterId,
+  currentPage,
+  searchTerm,
+}: CharacterDetailsProps) {
+  let errorMessage = "";
+  let character = null;
 
-      await refetch();
-    } finally {
-      setIsRefreshingDetails(false);
-    }
-  };
-
-  const errorMessage = error instanceof Error ? error.message : "Unable to load character details. Please try again.";
+  try {
+    character = await fetchCharacterById(characterId);
+  } catch (error) {
+    errorMessage =
+      error instanceof Error ? error.message : "Unable to load character details. Please try again.";
+  }
 
   return (
     <aside className="details-panel">
-      <button type="button" className="details-panel__close" onClick={onClose}>
+      <Link href={createCloseHref(currentPage, searchTerm)} className="details-panel__close">
         Close
-      </button>
+      </Link>
 
-      <button type="button" className="refresh-button" onClick={handleRefresh} disabled={isRefreshingDetails}>
-        {isRefreshingDetails ? "Refreshing..." : "Refresh details"}
-      </button>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      {isLoading && <Loader />}
-
-      {!isLoading && isError && <p className="error-message">{errorMessage}</p>}
-
-      {!isLoading && data && (
+      {character && (
         <>
-          <img src={data.image} alt={data.name} className="details-panel__image" />
-          <h2>{data.name}</h2>
-          <p>Status: {data.status}</p>
-          <p>Species: {data.species}</p>
-          {data.gender && <p>Gender: {data.gender}</p>}
-          {data.origin && <p>Origin: {data.origin.name}</p>}
-          {data.location && <p>Location: {data.location.name}</p>}
+          <Image
+            src={character.image}
+            alt={character.name}
+            width={300}
+            height={300}
+            className="details-panel__image"
+          />
+          <h2>{character.name}</h2>
+          <p>Status: {character.status}</p>
+          <p>Species: {character.species}</p>
+          {character.gender && <p>Gender: {character.gender}</p>}
+          {character.origin && <p>Origin: {character.origin.name}</p>}
+          {character.location && <p>Location: {character.location.name}</p>}
         </>
       )}
     </aside>

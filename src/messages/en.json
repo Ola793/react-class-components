@@ -1,0 +1,33 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About"
+  },
+  "HomePage": {
+    "title": "Character search",
+    "resultsTitle": "Results",
+    "searchPlaceholder": "Search characters by name",
+    "searchButton": "Search",
+    "refreshList": "Refresh list",
+    "refreshing": "Refreshing...",
+    "emptyResults": "No results found.",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {currentPage} of {totalPages}"
+  },
+  "AboutPage": {
+    "title": "About",
+    "description": "This application allows users to search Rick and Morty characters, view details, select items, and export selected data as CSV."
+  },
+  "NotFoundPage": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist.",
+    "backHome": "Back to home"
+  },
+  "Theme": {
+    "toggle": "Toggle theme"
+  },
+  "Language": {
+    "label": "Language"
+  }
+}

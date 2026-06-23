@@ -1,44 +1,44 @@
-import type { ChangeEvent } from "react";
-import { useSelectedItemsStore } from "../store/selectedItemsStore";
+import Image from "next/image";
+import { Link } from "../i18n/navigation";
 import type { Character } from "../types/character";
+import { SelectedItemCheckbox } from "./SelectedItemCheckbox";
 
 interface CardProps {
   character: Character;
-  onSelect: (characterId: number) => void;
+  currentPage: number;
+  searchTerm: string;
 }
 
-export function Card({ character, onSelect }: CardProps) {
-  const selectedItems = useSelectedItemsStore((state) => state.selectedItems);
-  const toggleItem = useSelectedItemsStore((state) => state.toggleItem);
+export function Card({ character, currentPage, searchTerm }: CardProps) {
+  const params = new URLSearchParams();
 
-  const isSelected = selectedItems.some((item) => item.id === character.id);
+  params.set("page", String(currentPage));
+  params.set("details", String(character.id));
 
-  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.stopPropagation();
-    toggleItem(character);
-  };
+  if (searchTerm) {
+    params.set("query", searchTerm);
+  }
 
   return (
     <article className="card">
-      <button className="card__button" type="button" onClick={() => onSelect(character.id)}>
-        <label className="card__checkbox" onClick={(event) => event.stopPropagation()}>
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={handleCheckboxChange}
-            aria-label={`Select ${character.name}`}
-          />
-        </label>
+      <div className="card__button">
+        <SelectedItemCheckbox character={character} />
 
-        <img src={character.image} alt={character.name} className="card__image" />
+        <Image
+          src={character.image}
+          alt={character.name}
+          width={120}
+          height={120}
+          className="card__image"
+        />
 
-        <div>
+        <Link href={`/?${params.toString()}`} className="card__content">
           <h3 className="card__title">{character.name}</h3>
           <p className="card__description">
             {character.status} — {character.species}
           </p>
-        </div>
-      </button>
+        </Link>
+      </div>
     </article>
   );
 }

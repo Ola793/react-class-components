@@ -1,10 +1,24 @@
+import { Link } from "../i18n/navigation";
+
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  searchTerm: string;
 }
 
-export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+const createPageHref = (page: number, searchTerm: string) => {
+  const params = new URLSearchParams();
+
+  params.set("page", String(page));
+
+  if (searchTerm) {
+    params.set("query", searchTerm);
+  }
+
+  return `/?${params.toString()}`;
+};
+
+export function Pagination({ currentPage, totalPages, searchTerm }: PaginationProps) {
   if (totalPages <= 1) {
     return null;
   }
@@ -14,17 +28,25 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
 
   return (
     <nav className="pagination" aria-label="Pagination">
-      <button type="button" disabled={isFirstPage} onClick={() => onPageChange(currentPage - 1)}>
-        Previous
-      </button>
+      {isFirstPage ? (
+        <button type="button" disabled>
+          Previous
+        </button>
+      ) : (
+        <Link href={createPageHref(currentPage - 1, searchTerm)}>Previous</Link>
+      )}
 
       <span>
         Page {currentPage} of {totalPages}
       </span>
 
-      <button type="button" disabled={isLastPage} onClick={() => onPageChange(currentPage + 1)}>
-        Next
-      </button>
+      {isLastPage ? (
+        <button type="button" disabled>
+          Next
+        </button>
+      ) : (
+        <Link href={createPageHref(currentPage + 1, searchTerm)}>Next</Link>
+      )}
     </nav>
   );
 }
