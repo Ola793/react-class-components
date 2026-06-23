@@ -1,36 +1,37 @@
-import js from "@eslint/js";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
-import prettier from "eslint-plugin-prettier";
-import eslintConfigPrettier from "eslint-config-prettier";
-import { defineConfig, globalIgnores } from "eslint/config";
 
-export default defineConfig([
-  globalIgnores(["dist", "coverage", "node_modules"]),
-
+export default tseslint.config(
   {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "dist/**",
+      "coverage/**",
+      "out/**",
+      "public/**",
+      "*.config.js",
+      "*.config.mjs",
     ],
-    languageOptions: {
-      globals: globals.browser,
-    },
   },
-
-  eslintConfigPrettier,
-
   {
-    files: ["**/*.{ts,tsx,js,jsx}"],
+    files: ["src/**/*.{ts,tsx}"],
+    extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.vitest,
+      },
+    },
     plugins: {
-      prettier,
+      "react-hooks": reactHooks,
     },
     rules: {
-      "prettier/prettier": "error",
+      ...reactHooks.configs.recommended.rules,
     },
-  },
-]);
+  }
+);
